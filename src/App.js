@@ -1,25 +1,33 @@
-import logo from './logo.svg';
+import React, { useState} from 'react';
 import './App.css';
+import useApi from './hooks/use-api';
+import Input from './components/input';
+import usePost from './hooks/post-api';
 
-function App() {
+function InputPost(){
+  const [artistName, setArtistName] = useState('');
+  const [visibility, setVisibilty] = useState();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <>
+      <input value={artistName} onChange={ (e) => setArtistName(e.target.value)}/>
+      <button onClick={()=>{setVisibilty(true)}}>submit</button>
+      <button onClick={()=>{setVisibilty(false)}}>clear</button>
+      {visibility ? <div >{artistName}</div> : null}
+      
+      </>
+  )
+}
+
+const App = () =>{
+ const {artistName} = useApi('/names/1');
+ console.log(artistName);
+return (
+    <div >
+      <InputPost/>
+      <Input/>
+      <div>{artistName}</div>
     </div>
   );
-}
+};
 
 export default App;
