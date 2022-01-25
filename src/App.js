@@ -1,31 +1,61 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
-import useApi from './hooks/use-api';
 import Input from './components/input';
-import usePost from './hooks/post-api';
+import axios from 'axios';
+import InputPost from './components/post-input';
+import InputPut from './components/put-input';
 
-function InputPost(){
-  const [artistName, setArtistName] = useState('');
+function InputDelete() {
+
+  const [nameId, setNameId] = useState('');
+  const [error, setError] = useState('');
   const [visibility, setVisibilty] = useState();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    alert(`Name Changed it was : ${nameId}`);
+
+    if (visibility && nameId){
+    axios.delete(`http://localhost:3002/names/${nameId}`)
+      .then(res => {
+        console.log(res);
+      }).catch(error => { 
+        setError(error);
+      })
+    }
+  }
+
+  // if (!nameId && visibility) return `Its blank`;
+  // if (error) return `Not found`;
+
+
+
   return (
-      <>
-      <input value={artistName} onChange={ (e) => setArtistName(e.target.value)}/>
-      <button onClick={()=>{setVisibilty(true)}}>submit</button>
-      <button onClick={()=>{setVisibilty(false)}}>clear</button>
-      {visibility ? <div >{artistName}</div> : null}
+    <>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Id :
+          <input type="text" placeholder={1} value={nameId} onChange={(e) => setNameId(e.target.value)} />
+        </label>
+        <button type="submit" onClick={() => { setVisibilty(true) }} >Add</button>
+      </form>
+      <button onClick={() => { setVisibilty(false); setNameId(''); setError(''); }}>clear</button>
+      {visibility && nameId && !error ? <div >{`Deleted ${nameId}`}</div> : null}
+      {!nameId && visibility ? <div >{`It's blank`}</div> : null}
+      {error && visibility && nameId ? <div >{`Error: ${error.message}`}</div> : null}
       
-      </>
+    </>
   )
 }
 
-const App = () =>{
- const {artistName} = useApi('/names/1');
- console.log(artistName);
-return (
+
+const App = () => {
+  return (
     <div >
-      <InputPost/>
-      <Input/>
-      <div>{artistName}</div>
+      <InputPost />
+      <InputPut />
+      <Input />
+      <InputDelete />
     </div>
   );
 };
